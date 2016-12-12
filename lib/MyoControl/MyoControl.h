@@ -6,7 +6,7 @@
 class MyoControl {
     public:
         MyoControl(uint8_t emg_pin);
-        void sampling();
+        void sampling(unsigned long sampleTime);
         void calibration();
         bool activation();
     private:
@@ -16,9 +16,9 @@ class MyoControl {
         void mvcCalc(unsigned int mvcSamples);
         uint8_t _emg_pin;
         volatile unsigned int emg;
-        double emgMean;
-        double emgMvc;
+        double emgMean, emgMvc;
         bool sampleOk;
+        unsigned long prevTime = 0, nowTime = 0;
 };
 
 #endif

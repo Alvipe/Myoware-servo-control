@@ -8,7 +8,6 @@ signal. This amplitude is compared to an activation threshold in order to move
 a servomotor. */
 
 #include <MyoControl.h>
-#include <MsTimer2.h>
 #include <Servo.h>
 
 MyoControl emgSens1(A0);
@@ -17,11 +16,6 @@ MyoControl emgSens2(A1);
 Servo finger1;
 Servo finger2;
 
-void sampling() {
-    emgSens1.sampling();
-    emgSens2.sampling();
-}
-
 void setup() {
     pinMode(13, OUTPUT);
     finger1.attach(9);
@@ -29,8 +23,6 @@ void setup() {
     finger1.writeMicroseconds(1800);
     finger2.writeMicroseconds(1800);
     Serial.begin(115200);
-    MsTimer2::set(1,sampling);
-    MsTimer2::start();
     delay(5000);
     emgSens1.calibration();
     emgSens2.calibration();

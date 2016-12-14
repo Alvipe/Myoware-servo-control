@@ -10,15 +10,15 @@ class MyoControl {
         void calibration();
         bool activation();
     private:
-        void blinkLED(uint8_t ledPin, unsigned int repeat, unsigned int bTime);
+        void blinkLED(uint8_t ledPin, unsigned int repeat, unsigned int blinkTime);
         void meanCalc(unsigned int meanSamples);
         double movAv();
         void mvcCalc(unsigned int mvcSamples);
         uint8_t _emg_pin;
         volatile unsigned int emg;
         double emgMean, emgMvc;
-        bool sampleOk;
-        unsigned long prevTime = 0, nowTime = 0;
+        bool sampleOk, isActive;
+        unsigned long prevTime = 0;
 };
 
 #endif

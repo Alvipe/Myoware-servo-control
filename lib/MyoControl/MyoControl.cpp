@@ -12,28 +12,29 @@ MyoControl::MyoControl(uint8_t emg_pin) {
 }
 
 /* blinkLED blinks a led "repeat" times with a "bTime" interval between on and off */
-void MyoControl::blinkLED(uint8_t ledPin, unsigned int repeat, unsigned int bTime) {
+void MyoControl::blinkLED(uint8_t ledPin, unsigned int repeat, unsigned int blinkTime) {
     pinMode(ledPin, OUTPUT);
     unsigned int i;
     for(i=0;i<repeat;i++) {
         digitalWrite(ledPin,HIGH);
-        delay(bTime);
+        delay(blinkTime);
         digitalWrite(ledPin,LOW);
-        delay(bTime);
+        delay(blinkTime);
     }
 }
 
 /* sampling reads the ADC every 1 ms with the MsTimer2 interrupt. */
 void MyoControl::sampling(unsigned long sampleTime) {
-    nowTime = micros();
-    if(nowTime - prevTime >= 1000*sampleTime) {
+    unsigned long nowTime = micros();
+    unsigned long timeChange = nowTime - prevTime;
+    if(timeChange >= 1000*sampleTime) {
         emg = analogRead(_emg_pin);
         sampleOk = true; // sampleOk indicates that a new sample is ready to be processed
+        prevTime = nowTime;
     }
     else {
         sampleOk = false;
     }
-    prevTime = micros();
 }
 
 /* meanCalc computes the mean value of the EMG signal during a period of
@@ -107,19 +108,16 @@ bool MyoControl::activation() {
     if(sampleOk) {
         sampleOk = false;
         double emgMovav = movAv(); // Gets the amplitude of the measured EMG signal
-
         /* If the amplitude of the EMG signal is greater than the activation threshold
         (a 35% of the MVC), there is a muscle activation. */
         if(emgMovav > 0.35*emgMvc) {
-            return true;
+            isActive = true;
         }
         /* If the amplitude of the EMG signal is below the activation threshold,
         there is no muscle activation. */
         else {
-            return false;
+            isActive = false;
         }
     }
-    else {
-        return false;
-    }
+    return isActive;
 }
